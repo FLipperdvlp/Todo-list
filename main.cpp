@@ -1,14 +1,17 @@
 #include <iostream>
 #include <vector>
+#include <string>
 using namespace std;
 
-class Todo{
-    private:
+class Todo {
+private:
     int ID;
     string Title;
     string Description;
+
 public:
-    Todo(const int id, const string& title, const string& description) : ID(id), Title(title), Description(description) {}
+    Todo(const int id, const string& title, const string& description)
+        : ID(id), Title(title), Description(description) {}
 
     int getID() const {
         return ID;
@@ -35,19 +38,31 @@ public:
     }
 
     void Display() const {
-        cout << "Title: " << Title << endl;
-        cout << "Description: " << Description << endl;
+        cout << "  ID          : " << ID << endl;
+        cout << "  Title       : " << Title << endl;
+        cout << "  Description : " << Description << endl;
     }
 };
 
-class TodoList{
+class TodoList {
 private:
     vector<Todo> todos;
+
 public:
     void DisplayMenu() const {
-        cout << "1. Add Todo" << endl;
-        cout << "2. Display Todos" << endl;
-        cout << "3. Exit" << endl;
+        cout << "\n";
+        cout << "  ====================================\n";
+        cout << "             TODO MANAGER             \n";
+        cout << "  ====================================\n";
+        cout << "\n";
+        cout << "    [1]  Add Todo\n";
+        cout << "    [2]  Display Todos\n";
+        cout << "    [3]  Edit Todo\n";
+        cout << "    [4]  Delete Todo\n";
+        cout << "    [5]  Exit\n";
+        cout << "\n";
+        cout << "  ====================================\n";
+        cout << "\n";
     }
 
     void addTodo(const Todo& todo) {
@@ -55,71 +70,120 @@ public:
     }
 
     void DeleteTodo(int id) {
-        for (auto it = todos.begin(); it != todos.end(); ++it) {
+        for (vector<Todo>::iterator it = todos.begin(); it != todos.end(); ++it) {
             if (it->getID() == id) {
                 todos.erase(it);
-                cout << "Todo with ID " << id << " deleted." << endl;
+                cout << "\n  [+] Todo #" << id << " deleted successfully!\n";
+                cout << "  ------------------------------------\n";
                 return;
             }
         }
-        cout << "Todo with ID " << id << " not found." << endl;
+        cout << "\n  [!] Todo #" << id << " not found.\n";
     }
 
     void displayTodos() const {
-        for (const auto& todo : todos) {
-            cout << "------------------------" << endl;
-            todo.Display();
-            cout << "------------------------" << endl;
+        cout << "\n";
+        cout << "  ====================================\n";
+        cout << "              YOUR TODOS              \n";
+        cout << "  ====================================\n";
+
+        if (todos.empty()) {
+            cout << "\n  No todos available.\n";
         }
+
+        for (vector<Todo>::const_iterator it = todos.begin(); it != todos.end(); ++it) {
+            cout << "\n  ------------------------------------\n";
+            it->Display();
+            cout << "  ------------------------------------\n";
+        }
+
+        cout << "\n  Total Todos: " << todos.size() << "\n";
+        cout << "  ====================================\n";
     }
 
-    void EditTodo(int id, const string& newTitle, const string& newDescription) {
-        for (auto& todo : todos) {
-            if (todo.getID() == id) {
-                todo.SetTitle(newTitle);
-                todo.SetDescription(newDescription);
-                cout << "Todo with ID " << id << " updated." << endl;
+    void EditTodo(int id, const string& newtitle, const string& newdescription) {
+        for (vector<Todo>::iterator it = todos.begin(); it != todos.end(); ++it) {
+            if (it->getID() == id) {
+                it->SetTitle(newtitle);
+                it->SetDescription(newdescription);
+                cout << "\n  [+] Todo #" << id << " updated successfully!\n";
+                cout << "  ------------------------------------\n";
                 return;
             }
         }
-        cout << "Todo with ID " << id << " not found." << endl;
+        cout << "\n  [!] Todo #" << id << " not found.\n";
     }
 
-    void run(){
+    void run() {
         int choice;
         do {
             DisplayMenu();
-            cout << "Enter your choice: ";
+            cout << "  >> Enter your choice: ";
             cin >> choice;
             switch (choice) {
                 case 1: {
                     int id;
                     string title, description;
-                    cout << "Enter ID: ";
+                    cout << "\n  ========== ADD NEW TODO ==========\n\n";
+                    cout << "  >> Enter ID: ";
                     cin >> id;
-                    cin.ignore(); // Ignore the newline character left in the buffer
-                    cout << "Enter Title: ";
+                    cin.ignore();
+
+                    cout << "  >> Enter Title: ";
                     getline(cin, title);
-                    cout << "Enter Description: ";
+
+                    cout << "  >> Enter Description: ";
                     getline(cin, description);
+
                     addTodo(Todo(id, title, description));
+
+                    cout << "\n  [+] Todo added successfully!\n";
+                    cout << "  ==================================\n";
                     break;
                 }
                 case 2:
                     displayTodos();
                     break;
-                case 3:
-                    cout << "Exiting..." << endl;
+                case 3: {
+                    int Id;
+                    string newTitle, newDescription;
+
+                    cout << "\n  ============ EDIT TODO ============\n\n";
+                    cout << "  >> Enter Todo ID: ";
+                    cin >> Id;
+                    cin.ignore();
+
+                    cout << "  >> Enter new Title: ";
+                    getline(cin, newTitle);
+                    cout << "  >> Enter new Description: ";
+                    getline(cin, newDescription);
+
+                    EditTodo(Id, newTitle, newDescription);
+                    break;
+                }
+                case 4: {
+                    int id;
+                    cout << "\n  =========== DELETE TODO ===========\n\n";
+                    cout << "  >> Enter Todo ID to delete: ";
+                    cin >> id;
+
+                    DeleteTodo(id);
+                    continue;
+                }
+                case 5:
+                    cout << "\n";
+                    cout << "  ====================================\n";
+                    cout << "       Thank you for using TODO!      \n";
+                    cout << "  ====================================\n";
                     break;
                 default:
-                    cout << "Invalid choice. Please try again." << endl;
+                    cout << "\n  [!] Invalid choice. Please try again.\n";
             }
-        }while (choice != 3);
+        } while (choice != 4);
     }
 };
 
-
-int main(){
+int main() {
     TodoList todoList;
     todoList.run();
     return 0;
